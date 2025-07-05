@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LMS App</title>
+    <link href="/src/style.css" rel="stylesheet" />
+  </head>
+  <body class="bg-gray-100 min-h-screen flex flex-col">
+    <div class="flex flex-1 min-h-screen">
+      <aside
+        id="sidebar"
+        class="flex flex-col w-xs h-screen px-4 py-8 overflow-y-auto bg-white border-r rtl:border-r-0 rtl:border-l dark:bg-gray-900 dark:border-gray-700"
+      ></aside>
+      <main
+        id="app"
+        class="flex-1 justify-center mx-auto p-8 text-gray-900 min-h-[400px]"
+      ></main>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
