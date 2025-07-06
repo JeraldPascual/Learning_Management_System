@@ -8,6 +8,7 @@ import { renderDashboard } from "./dashboard/dashboard";
 import { renderCourses } from "./courses/course";
 import { renderLessons } from "./courses/lesson";
 import { requireAuth } from "./utils/authguard";
+import gsap from "gsap";
 
 // Get the main content div
 const appDiv = document.getElementById("app");
@@ -15,57 +16,60 @@ const appDiv = document.getElementById("app");
 // Render the login page and handle login logic
 function renderLogin() {
   setAppBackground(true); // Ensure background is set
-  appDiv.innerHTML = `
-    <div class="flex items-center justify-center w-full h-full min-h-[400px]">
-      <form id="login-form"
-        class="w-full max-w-md flex flex-col justify-center bg-white text-gray-900 rounded-2xl shadow-lg p-8 dark:bg-gray-900 dark:text-gray-100"
-      >
-        <h2 class="text-3xl font-bold mb-8 text-center">Login</h2>
-        <div class="mb-4">
-          <label class="block mb-1 text-sm font-medium" for="email">Email</label> 
-          <input type="email" id="email" placeholder="Email" required
-            class="input w-full px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-400" />
-        </div>
-        <div class="mb-4">
-          <label class="block mb-1 text-sm font-medium" for="password">Password</label>
-          <input type="password" id="password" placeholder="Password" required
-            class="input w-full px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-400" />
-        </div>
-        <button type="submit"
-          class="btn btn-neutral mt-2 w-full py-2 rounded-md bg-blue-600 text-white font-semibold hover:bg-blue-700 transition">
-          Login
-        </button>
-        <div id="login-error" class="text-red-500 text-sm mt-2"></div>
-        <p class="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
-          Don't have an account?
-          <a href="#" id="goto-signup" class="text-blue-600 hover:underline">Sign up</a>
-        </p>
-      </form>
-    </div>
-  `;
-  // Handle login form submission
-  document.getElementById("login-form").onsubmit = async (e) => {
-    e.preventDefault();
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    try {
-      await login(email, password); // Try to log in
-      route("dashboard"); // Go to dashboard on success
-    } catch (err) {
-      document.getElementById("login-error").textContent = err.message; // Show error
-    }
-  };
-  // Link to signup page
-  document.getElementById("goto-signup").onclick = (e) => {
-    e.preventDefault();
-    route("signup");
-  };
+  gsapPageTransition(() => {
+    appDiv.innerHTML = `
+      <div class="flex items-center justify-center w-full h-full min-h-[400px]">
+        <form id="login-form"
+          class="w-full max-w-md flex flex-col justify-center bg-white text-gray-900 rounded-2xl shadow-lg p-8 dark:bg-gray-900 dark:text-gray-100"
+        >
+          <h2 class="text-3xl font-bold mb-8 text-center">Login</h2>
+          <div class="mb-4">
+            <label class="block mb-1 text-sm font-medium" for="email">Email</label> 
+            <input type="email" id="email" placeholder="Email" required
+              class="input w-full px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+          </div>
+          <div class="mb-4">
+            <label class="block mb-1 text-sm font-medium" for="password">Password</label>
+            <input type="password" id="password" placeholder="Password" required
+              class="input w-full px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+          </div>
+          <button type="submit"
+            class="btn btn-neutral mt-2 w-full py-2 rounded-md bg-blue-600 text-white font-semibold hover:bg-blue-700 transition">
+            Login
+          </button>
+          <div id="login-error" class="text-red-500 text-sm mt-2"></div>
+          <p class="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
+            Don't have an account?
+            <a href="#" id="goto-signup" class="text-blue-600 hover:underline">Sign up</a>
+          </p>
+        </form>
+      </div>
+    `;
+    // Handle login form submission
+    document.getElementById("login-form").onsubmit = async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      try {
+        await login(email, password); // Try to log in
+        route("dashboard"); // Go to dashboard on success
+      } catch (err) {
+        document.getElementById("login-error").textContent = err.message; // Show error
+      }
+    };
+    // Link to signup page
+    document.getElementById("goto-signup").onclick = (e) => {
+      e.preventDefault();
+      route("signup");
+    };
+  });
 }
 
 // Render the signup page and handle signup logic
 function renderSignup() {
   setAppBackground(true); // Ensure background is set
-  appDiv.innerHTML = `
+  gsapPageTransition(() => { 
+    appDiv.innerHTML = `
     <div class="flex items-center justify-center w-full h-full min-h-[400px]">
       <form id="signup-form"
         class="w-full max-w-md flex flex-col justify-center bg-white text-gray-900 rounded-2xl shadow-lg p-8 dark:bg-gray-900 dark:text-gray-100"
@@ -116,10 +120,14 @@ function renderSignup() {
     e.preventDefault();
     route("login");
   };
+
+}); // End of gsapPageTransition
 }
 
 // Render the sidebar navigation based on user state
-function renderSidebar(user) {
+function renderSidebar(user, currentPage) {
+  const isDashboard = currentPage === "dashboard";
+  const isCourses = currentPage === "courses";
   const sidebar = document.getElementById("sidebar");
   sidebar.innerHTML = `
     <a href="#">
@@ -128,11 +136,11 @@ function renderSidebar(user) {
     <div class="flex flex-col justify-between flex-1 mt-6 h-full overflow-hidden">
       <nav>
         ${user ? `
-          <a id="nav-dashboard" class="flex items-center px-4 py-2 text-gray-700 bg-gray-100 rounded-md dark:bg-gray-800 dark:text-gray-200 cursor-pointer">
+          <a id="nav-dashboard" class="flex items-center px-4 py-2 ${isDashboard ? "text-gray-700 bg-gray-100 rounded-md dark:bg-gray-800 dark:text-gray-200" : "text-gray-600 transition-colors duration-300 transform rounded-md dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-gray-200 hover:text-gray-700"} cursor-pointer">
             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"><path d="M19 11H5M19 11C20.1046 11 21 11.8954 21 13V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V13C3 11.8954 3.89543 11 5 11M19 11V9C19 7.89543 18.1046 7 17 7M5 11V9C5 7.89543 5.89543 7 7 7M7 7V5C7 3.89543 7.89543 3 9 3H15C16.1046 3 17 3.89543 17 5V7M7 7H17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             <span class="mx-4 font-medium">Dashboard</span>
           </a>
-          <a id="nav-courses" class="flex items-center px-4 py-2 mt-5 text-gray-600 transition-colors duration-300 transform rounded-md dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-gray-200 hover:text-gray-700 cursor-pointer">
+          <a id="nav-courses" class="flex items-center px-4 py-2 mt-5 ${isCourses ? "text-gray-700 bg-gray-100 rounded-md dark:bg-gray-800 dark:text-gray-200" : "text-gray-600 transition-colors duration-300 transform rounded-md dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-gray-200 hover:text-gray-700"} cursor-pointer">
             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"><path d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             <span class="mx-4 font-medium">Courses</span>
           </a>
@@ -144,8 +152,7 @@ function renderSidebar(user) {
       </nav>
       ${user ? `
       <a href="#" class="flex items-center px-4 -mx-2 mt-8">
-        <img class="object-cover mx-2 rounded-full h-9 w-9" src="https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80" alt="avatar" />
-        <span class="mx-2 font-medium text-gray-800 dark:text-gray-200">${user.displayName || user.email}</span>
+       <span class="mx-2 font-medium text-gray-800 dark:text-gray-200">${user.displayName || user.email}</span>
       </a>
       ` : ""}
     </div>
@@ -174,7 +181,7 @@ async function route(page, data) {
     }
   }
   const user = auth.currentUser;
-  renderSidebar(user);
+  renderSidebar(user, page);
 
   // If not logged in, force login/signup
   if (!user && page !== "login" && page !== "signup") {
@@ -227,9 +234,25 @@ function setAppBackground(enabled) {
   const main = document.getElementById("app");
   if (enabled) {
     main.classList.add("bg-pattern");
+    gsap.to(main, { opacity: 0.8, duration: 0.5 });
   } else {
     main.classList.remove("bg-pattern");
+    gsap.to(main, { opacity: 1, duration: 0.5 });
     main.style.background = "none";
-    main.style.opacity = "1";
   }
+}
+
+// If using ES modules:
+// import gsap from "gsap";
+
+function gsapPageTransition(callback) {
+  const main = document.getElementById("app");
+  gsap.to(main, {
+    opacity: 0,
+    duration: 0.3,
+    onComplete: () => {
+      callback();
+      gsap.fromTo(main, { opacity: 0 }, { opacity: 1, duration: 0.3 });
+    }
+  });
 }

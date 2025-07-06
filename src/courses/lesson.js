@@ -1,5 +1,5 @@
 import { db } from "../utils/firebase";
-import { collection, addDoc, getDocs, query, where } from "firebase/firestore";
+import { collection, addDoc, getDocs, query, where, orderBy } from "firebase/firestore";
 
 // Renders the lessons page for a given course, and a form to add lessons
 export async function renderLessons(appDiv, user, data, route) {
@@ -17,7 +17,7 @@ export async function renderLessons(appDiv, user, data, route) {
     <ul>
       ${lessons.map(l => `<li>${l.title}</li>`).join("")}
     </ul>
-    <h3>Add Lesson</h3>
+    <h3  >Add Lesson</h3>
     <form id="add-lesson-form">
       <input type="text" id="lesson-title" placeholder="Lesson Title" required />
       <button type="submit">Add</button>
@@ -42,4 +42,18 @@ export async function renderLessons(appDiv, user, data, route) {
       document.getElementById("lesson-error").textContent = err.message;
     }
   };
+}
+
+// Query Firestore for courses belonging to this user, ordered by creation date
+export async function getCourses(uid) {
+  const q = query(
+    collection(db, "courses"),
+    where("uid", "==", uid),
+    orderBy("createdAt", "desc")
+  );
+  const snap = await getDocs(q);
+  let courses = [];
+  // Collect all course documents into an array
+  snap.forEach(doc => courses.push({ id: doc.id, ...doc.data() }));
+  return courses;
 }

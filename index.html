@@ -7,14 +7,14 @@
     <link href="/src/style.css" rel="stylesheet" />
   </head>
   <body class="bg-gray-100 min-h-screen flex flex-col">
-    <div class="flex flex-1 min-h-screen">
+    <div class="flex flex-1 min-h-screen flex-col md:flex-row">
       <aside
         id="sidebar"
-        class="flex flex-col w-xs h-screen px-4 py-8 overflow-y-auto bg-white border-r rtl:border-r-0 rtl:border-l dark:bg-gray-900 dark:border-gray-700"
+        class="flex flex-col w-full md:w-64 h-auto md:h-screen px-4 py-8 overflow-y-auto bg-white border-b md:border-b-0 md:border-r rtl:border-r-0 rtl:border-l dark:bg-gray-900 dark:border-gray-700"
       ></aside>
       <main
         id="app"
-        class="flex-1 justify-center mx-auto p-8 text-gray-900 min-h-[400px]"
+        class="flex-1 justify-center mx-auto p-4 sm:p-8 text-gray-900 min-h-[400px] w-full"
       ></main>
     </div>
     <script type="module" src="/src/main.js"></script>
